@@ -1,32 +1,28 @@
 # Stage 1: Build
 FROM node:20-alpine AS build
 
-# Directorio de trabajo
 WORKDIR /app
 
-# Copiar package.json y package-lock.json primero para aprovechar cache
+# Copiar package.json y package-lock.json
 COPY package*.json ./
 
 # Instalar dependencias
 RUN npm install
 
-# Copiar todo el proyecto
+# Copiar todo
 COPY . .
 
-# Build de producción
+# Build de producción con Vite
 RUN npm run build
 
-# Stage 2: Serve with Nginx
+# Stage 2: Serve con Nginx
 FROM nginx:alpine
 
-# Copiar build al directorio de Nginx
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Copiar configuración de Nginx personalizada si quieres (opcional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copiar carpeta dist al Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Exponer puerto 80
 EXPOSE 80
 
-# Comando para iniciar Nginx
+# Iniciar Nginx en primer plano
 CMD ["nginx", "-g", "daemon off;"]
