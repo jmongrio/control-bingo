@@ -18,7 +18,7 @@ Control de Bingo es una aplicación web desarrollada en **React + TypeScript** q
 
 ## 📷 Capturas de Pantalla
 
-![Captura de Pantalla](https://github.com/jmongrio/ControlDeBingo/assets/63427621/ca52f29f-8a39-4cd5-92a9-a0c7275d3488)
+![Captura 1](https://github.com/user-attachments/assets/21f9ba8e-f292-4bd9-b943-ecdf1a3d5d0a)
 
 ## 💻 Instalación y Uso
 
