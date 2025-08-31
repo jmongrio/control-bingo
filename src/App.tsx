@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, type KeyboardEvent } from "react";
 import NavBar from "./components/NavBar";
 import type { Data } from "./types/Data";
+import GameTypeSelector from "./components/GameTypeSelector";
 
 export default function App() {
   const [numbers, setNumbers] = useState<Data[]>(() => {
@@ -8,43 +9,56 @@ export default function App() {
     return stored ? JSON.parse(stored) : [];
   });
   const [input, setInput] = useState<string>("");
+  const [gameType, setGameType] = useState<string>(() => {
+    return localStorage.getItem("gameType") || "cartonLleno";
+  });
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Cargar datos desde localStorage
   useEffect(() => {
     const stored = localStorage.getItem("dataList");
     if (stored) setNumbers(JSON.parse(stored));
+
+    const storedGameType = localStorage.getItem("gameType");
+    if (storedGameType) setGameType(storedGameType);
   }, []);
 
+  // Guardar números en localStorage
   useEffect(() => {
     localStorage.setItem("dataList", JSON.stringify(numbers));
   }, [numbers]);
+
+  // Guardar tipo de juego en localStorage
+  useEffect(() => {
+    localStorage.setItem("gameType", gameType);
+  }, [gameType]);
 
   const focusInput = () => inputRef.current?.focus();
 
   const addNumber = () => {
     const parsed = parseInt(input);
-    if (!parsed) {
+    if (!parsed && parsed !== 0) {
       alert("Por favor ingrese un número válido.");
       setInput("");
       focusInput();
       return;
     }
 
-    if (numbers.some(n => n.Number === parsed)) {
+    if (numbers.some((n) => n.Number === parsed)) {
       alert(`El número ${parsed} ya está registrado.`);
       setInput("");
       focusInput();
       return;
     }
 
-    const newId = numbers.length ? Math.max(...numbers.map(n => n.Id)) + 1 : 1;
+    const newId = numbers.length ? Math.max(...numbers.map((n) => n.Id)) + 1 : 1;
     setNumbers([...numbers, { Id: newId, Number: parsed }]);
     setInput("");
     focusInput();
   };
 
   const deleteById = (id: number) => {
-    setNumbers(numbers.filter(n => n.Id !== id));
+    setNumbers(numbers.filter((n) => n.Id !== id));
   };
 
   const deleteAll = () => {
@@ -67,6 +81,10 @@ export default function App() {
           <div className="col-12 col-md-3">
             <div className="card shadow-lg p-4 sticky-top" style={{ top: "1rem" }}>
               <h5 className="mb-3 text-muted text-center">Panel de Control</h5>
+
+              {/* Selector de tipo de juego */}
+              <GameTypeSelector onChange={setGameType} />
+
               <div className="form-floating mb-3">
                 <input
                   type="number"
@@ -79,6 +97,7 @@ export default function App() {
                 />
                 <label>Inserte un número</label>
               </div>
+
               <button className="btn btn-primary w-100 mb-3" onClick={addNumber}>
                 Guardar
               </button>
